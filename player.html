@@ -3,12 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Anime Player (Base64 URL)</title>
+  <title>Anime Player (Double Encoded)</title>
   <style>
-    /* สไตล์เหมือนเดิม */
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
     html, body {
       margin: 0; padding: 0; height: 100%;
       background-color: #000;
@@ -55,55 +52,58 @@
       return urlParams.get(name);
     }
 
-    // ถอดรหัส Base64 แบบปลอดภัย (รองรับ url-safe base64 ด้วย)
     function decodeBase64(str) {
       try {
-        // แทนที่ URL safe chars
         str = str.replace(/-/g, '+').replace(/_/g, '/');
-        // เติม padding ถ้าขาด
-        while (str.length % 4) {
-          str += '=';
-        }
+        while (str.length % 4) str += '=';
         return atob(str);
       } catch {
         return null;
       }
     }
 
-    const encodedUrl = getQueryParam('url');
-    if (!encodedUrl) {
-      message.textContent = "❌ ไม่พบ URL วิดีโอ";
-      message.style.display = "block";
-    } else {
-      const videoSrc = decodeBase64(encodedUrl);
-      if (!videoSrc) {
-        message.textContent = "❌ URL ไม่ถูกต้อง (base64 decode ไม่สำเร็จ)";
-        message.style.display = "block";
-      } else if (Hls.isSupported()) {
-        const hls = new Hls();
-        hls.loadSource(videoSrc);
-        hls.attachMedia(video);
-        hls.on(Hls.Events.MANIFEST_PARSED, () => {
-          video.play();
-        });
-        hls.on(Hls.Events.ERROR, function (event, data) {
-          if (data.fatal) {
-            console.error("HLS fatal error:", data);
-            message.style.display = "block";
-          } else {
-            console.warn("HLS warning:", data);
-          }
-        });
-      } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-        video.src = videoSrc;
-        video.addEventListener('loadedmetadata', () => {
-          video.play();
-        });
-      } else {
-        message.textContent = "❌ เบราว์เซอร์ของคุณไม่รองรับ HLS (.m3u8)";
-        message.style.display = "block";
+    const token = getQueryParam('token');
+    let videoSrc = null;
+
+    if (token) {
+      try {
+        const decodedLink = decodeBase64(token); // ถอดรหัสเป็น URL ที่มี ?url=...
+        const urlParams = new URL(decodedLink).searchParams;
+        const encodedVideoUrl = urlParams.get('url');
+        if (encodedVideoUrl) {
+          videoSrc = decodeBase64(encodedVideoUrl); // ถอดรหัสลิงก์วิดีโอจริง
+        }
+      } catch (e) {
+        console.error("Token decode error:", e);
       }
+    }
+
+    if (!videoSrc) {
+      message.textContent = "❌ ไม่พบหรือถอดรหัส URL วิดีโอไม่ได้";
+      message.style.display = "block";
+    } else if (Hls.isSupported()) {
+      const hls = new Hls();
+      hls.loadSource(videoSrc);
+      hls.attachMedia(video);
+      hls.on(Hls.Events.MANIFEST_PARSED, () => {
+        video.play();
+      });
+      hls.on(Hls.Events.ERROR, function (event, data) {
+        if (data.fatal) {
+          console.error("HLS fatal error:", data);
+          message.style.display = "block";
+        }
+      });
+    } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+      video.src = videoSrc;
+      video.addEventListener('loadedmetadata', () => {
+        video.play();
+      });
+    } else {
+      message.textContent = "❌ เบราว์เซอร์ของคุณไม่รองรับ HLS (.m3u8)";
+      message.style.display = "block";
     }
   </script>
 </body>
+</html></body>
 </html>
