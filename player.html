@@ -3,15 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Anime Player</title>
+  <title>Anime Player (Base64 URL)</title>
   <style>
+    /* สไตล์เหมือนเดิม */
     * {
       box-sizing: border-box;
     }
     html, body {
-      margin: 0;
-      padding: 0;
-      height: 100%;
+      margin: 0; padding: 0; height: 100%;
       background-color: #000;
       color: #fff;
       font-family: 'Segoe UI', sans-serif;
@@ -51,40 +50,59 @@
     const video = document.getElementById('video');
     const message = document.getElementById('message');
 
-    // ดึงพารามิเตอร์ url จาก query string
     function getQueryParam(name) {
       const urlParams = new URLSearchParams(window.location.search);
       return urlParams.get(name);
     }
 
-    const videoSrc = getQueryParam('url');
+    // ถอดรหัส Base64 แบบปลอดภัย (รองรับ url-safe base64 ด้วย)
+    function decodeBase64(str) {
+      try {
+        // แทนที่ URL safe chars
+        str = str.replace(/-/g, '+').replace(/_/g, '/');
+        // เติม padding ถ้าขาด
+        while (str.length % 4) {
+          str += '=';
+        }
+        return atob(str);
+      } catch {
+        return null;
+      }
+    }
 
-    if (!videoSrc) {
+    const encodedUrl = getQueryParam('url');
+    if (!encodedUrl) {
       message.textContent = "❌ ไม่พบ URL วิดีโอ";
       message.style.display = "block";
-    } else if (Hls.isSupported()) {
-      const hls = new Hls();
-      hls.loadSource(videoSrc);
-      hls.attachMedia(video);
-      hls.on(Hls.Events.MANIFEST_PARSED, () => {
-        video.play();
-      });
-      hls.on(Hls.Events.ERROR, function (event, data) {
-        if (data.fatal) {
-          console.error("HLS fatal error:", data);
-          message.style.display = "block";
-        } else {
-          console.warn("HLS warning:", data);
-        }
-      });
-    } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-      video.src = videoSrc;
-      video.addEventListener('loadedmetadata', () => {
-        video.play();
-      });
     } else {
-      message.textContent = "❌ เบราว์เซอร์ของคุณไม่รองรับ HLS (.m3u8)";
-      message.style.display = "block";
+      const videoSrc = decodeBase64(encodedUrl);
+      if (!videoSrc) {
+        message.textContent = "❌ URL ไม่ถูกต้อง (base64 decode ไม่สำเร็จ)";
+        message.style.display = "block";
+      } else if (Hls.isSupported()) {
+        const hls = new Hls();
+        hls.loadSource(videoSrc);
+        hls.attachMedia(video);
+        hls.on(Hls.Events.MANIFEST_PARSED, () => {
+          video.play();
+        });
+        hls.on(Hls.Events.ERROR, function (event, data) {
+          if (data.fatal) {
+            console.error("HLS fatal error:", data);
+            message.style.display = "block";
+          } else {
+            console.warn("HLS warning:", data);
+          }
+        });
+      } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+        video.src = videoSrc;
+        video.addEventListener('loadedmetadata', () => {
+          video.play();
+        });
+      } else {
+        message.textContent = "❌ เบราว์เซอร์ของคุณไม่รองรับ HLS (.m3u8)";
+        message.style.display = "block";
+      }
     }
   </script>
 </body>
