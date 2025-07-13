@@ -8,17 +8,16 @@
     * {
       box-sizing: border-box;
     }
-    body {
+    html, body {
       margin: 0;
+      padding: 0;
+      height: 100%;
       background-color: #000;
       color: #fff;
       font-family: 'Segoe UI', sans-serif;
       display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
-      height: 100vh;
-      overflow: hidden;
     }
     .container {
       width: 100%;
@@ -30,20 +29,21 @@
       height: auto;
       border: 2px solid #444;
       border-radius: 8px;
-      background: #000;
+      background-color: #000;
     }
     .message {
       text-align: center;
-      margin-top: 10px;
+      margin-top: 12px;
       color: #f55;
       font-size: 16px;
+      display: none;
     }
   </style>
 </head>
 <body>
   <div class="container">
     <video id="video" controls autoplay playsinline></video>
-    <div class="message" id="message"></div>
+    <div class="message" id="message">ไม่สามารถโหลดวิดีโอได้ หรือวิดีโอไม่อนุญาตให้ฝัง</div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
@@ -51,6 +51,7 @@
     const video = document.getElementById('video');
     const message = document.getElementById('message');
 
+    // ดึงพารามิเตอร์ url จาก query string
     function getQueryParam(name) {
       const urlParams = new URLSearchParams(window.location.search);
       return urlParams.get(name);
@@ -59,19 +60,31 @@
     const videoSrc = getQueryParam('url');
 
     if (!videoSrc) {
-      message.textContent = '❌ ไม่พบพารามิเตอร์วิดีโอ (url)';
+      message.textContent = "❌ ไม่พบ URL วิดีโอ";
+      message.style.display = "block";
     } else if (Hls.isSupported()) {
       const hls = new Hls();
       hls.loadSource(videoSrc);
       hls.attachMedia(video);
-      hls.on(Hls.Events.ERROR, (event, data) => {
-        message.textContent = "⚠️ ไม่สามารถโหลดวิดีโอได้ หรือวิดีโอไม่อนุญาตให้ฝัง";
+      hls.on(Hls.Events.MANIFEST_PARSED, () => {
+        video.play();
+      });
+      hls.on(Hls.Events.ERROR, function (event, data) {
+        if (data.fatal) {
+          console.error("HLS fatal error:", data);
+          message.style.display = "block";
+        } else {
+          console.warn("HLS warning:", data);
+        }
       });
     } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
       video.src = videoSrc;
-      video.addEventListener('loadedmetadata', () => video.play());
+      video.addEventListener('loadedmetadata', () => {
+        video.play();
+      });
     } else {
-      message.textContent = '❌ เบราว์เซอร์ของคุณไม่รองรับ HLS (.m3u8)';
+      message.textContent = "❌ เบราว์เซอร์ของคุณไม่รองรับ HLS (.m3u8)";
+      message.style.display = "block";
     }
   </script>
 </body>
