@@ -2,19 +2,20 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Video Player</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Simple HLS Player</title>
   <style>
+    /* เต็มหน้าจอไม่มี margin */
     html, body {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      background: #000;
+      margin: 0; padding: 0; height: 100%;
+      background-color: #000;
+      overflow: hidden;
     }
     video {
       width: 100vw;
       height: 100vh;
-      background-color: #000;
+      background-color: black;
+      display: block;
     }
   </style>
 </head>
@@ -23,51 +24,48 @@
 
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
   <script>
-    function getParam(name) {
-      const params = new URLSearchParams(window.location.search);
-      return params.get(name);
+    const video = document.getElementById('video');
+    const params = new URLSearchParams(window.location.search);
+    const encodedUrl = params.get('url');
+
+    if (!encodedUrl) {
+      alert('❌ ไม่มี URL วิดีโอในพารามิเตอร์');
+      throw new Error('Missing video url');
     }
 
-    function base64Decode(str) {
+    // ฟังก์ชันถอดรหัส Base64 แบบรองรับ URL-safe
+    function decodeBase64(str) {
+      str = str.replace(/-/g, '+').replace(/_/g, '/');
+      while (str.length % 4) {
+        str += '=';
+      }
       try {
-        str = str.replace(/-/g, '+').replace(/_/g, '/');
-        while (str.length % 4 !== 0) str += '=';
         return atob(str);
-      } catch {
-        return null;
+      } catch (e) {
+        alert('❌ ไม่สามารถถอดรหัส URL ได้');
+        throw e;
       }
     }
 
-    const token = getParam("token");
-    const videoElement = document.getElementById("video");
+    const videoSrc = decodeBase64(encodedUrl);
 
-    if (!token) {
-      alert("❌ ไม่พบ token");
+    if (Hls.isSupported()) {
+      const hls = new Hls();
+      hls.loadSource(videoSrc);
+      hls.attachMedia(video);
+      hls.on(Hls.Events.MANIFEST_PARSED, () => {
+        video.play();
+      });
+      hls.on(Hls.Events.ERROR, function(event, data) {
+        console.error('HLS.js error:', data);
+      });
+    } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+      video.src = videoSrc;
+      video.addEventListener('loadedmetadata', () => {
+        video.play();
+      });
     } else {
-      try {
-        const decoded1 = base64Decode(token); // decode URL with ?url=
-        const urlObj = new URL(decoded1);
-        const encodedVideo = urlObj.searchParams.get("url");
-        const videoUrl = base64Decode(encodedVideo);
-
-        if (videoUrl) {
-          if (Hls.isSupported()) {
-            const hls = new Hls();
-            hls.loadSource(videoUrl);
-            hls.attachMedia(videoElement);
-            hls.on(Hls.Events.MANIFEST_PARSED, () => videoElement.play());
-          } else if (videoElement.canPlayType("application/vnd.apple.mpegurl")) {
-            videoElement.src = videoUrl;
-            videoElement.addEventListener("loadedmetadata", () => videoElement.play());
-          } else {
-            alert("❌ เบราว์เซอร์ไม่รองรับ HLS");
-          }
-        } else {
-          alert("❌ ถอดรหัสวิดีโอล้มเหลว");
-        }
-      } catch (e) {
-        alert("❌ เกิดข้อผิดพลาด: " + e.message);
-      }
+      alert('❌ เบราว์เซอร์ไม่รองรับ HLS (.m3u8)');
     }
   </script>
 </body>
