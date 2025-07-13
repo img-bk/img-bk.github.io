@@ -13,6 +13,7 @@
       justify-content: center;
       align-items: center;
       height: 100vh;
+      -webkit-tap-highlight-color: transparent;
     }
 
     .video-wrapper {
@@ -21,12 +22,41 @@
       max-width: 800px;
       aspect-ratio: 16 / 9;
       background: #000;
+      user-select: none;
     }
 
     video {
       width: 100%;
       height: 100%;
       background: #000;
+      display: block;
+    }
+
+    /* ปุ่มเล่นใหญ่กลางจอ */
+    #bigPlayBtn {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(0,0,0,0.6);
+      border-radius: 50%;
+      width: 100px;
+      height: 100px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.3s ease;
+      z-index: 10;
+    }
+    #bigPlayBtn svg {
+      fill: white;
+      width: 50px;
+      height: 50px;
+    }
+    #bigPlayBtn.hidden {
+      opacity: 0;
+      pointer-events: none;
     }
 
     .controls-overlay {
@@ -39,6 +69,7 @@
       opacity: 0;
       pointer-events: none;
       transition: 0.3s;
+      z-index: 5;
     }
 
     .controls-overlay.active {
@@ -62,6 +93,7 @@
       width: 60px;
       height: 60px;
       transition: transform 0.2s;
+      user-select: none;
     }
 
     .buttons button:hover {
@@ -72,6 +104,7 @@
       width: 28px;
       height: 28px;
       fill: white;
+      pointer-events: none;
     }
 
     .progress-bar {
@@ -82,11 +115,13 @@
       padding: 6px;
       display: flex;
       align-items: center;
+      z-index: 6;
     }
 
     .progress-bar input[type="range"] {
       flex: 1;
       margin: 0 10px;
+      cursor: pointer;
     }
 
     .time {
@@ -94,31 +129,39 @@
       font-size: 13px;
       min-width: 80px;
       text-align: right;
+      user-select: none;
     }
   </style>
 </head>
 <body>
 
 <div class="video-wrapper" id="playerWrapper">
-  <video id="video" controlsList="nodownload"></video>
+  <video id="video" preload="metadata" playsinline></video>
 
-  <div class="controls-overlay active" id="overlay">
+  <!-- ปุ่มเล่นใหญ่กลางจอ -->
+  <div id="bigPlayBtn" title="เล่นวีดีโอ" role="button" aria-label="เล่นวีดีโอ">
+    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path d="M8 5v14l11-7z"/>
+    </svg>
+  </div>
+
+  <div class="controls-overlay active" id="overlay" aria-label="ปุ่มควบคุมวิดีโอ">
     <div class="buttons">
-      <button id="backwardBtn" title="ย้อน 10 วิ">
+      <button id="backwardBtn" title="ย้อน 10 วินาที" aria-label="ย้อน 10 วินาที">
         <svg viewBox="0 0 24 24"><path d="M11 18V6l-8.5 6L11 18zm1-12v2.1c3.4.5 6 3.4 6 6.9s-2.6 6.4-6 6.9v2.1c4.5-.5 8-4.3 8-9s-3.5-8.5-8-9z"/></svg>
       </button>
-      <button id="playPauseBtn" title="เล่น/หยุด">
+      <button id="playPauseBtn" title="เล่น/หยุด" aria-label="เล่นหรือหยุด">
         <svg id="playIcon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
         <svg id="pauseIcon" viewBox="0 0 24 24" style="display:none;"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
       </button>
-      <button id="forwardBtn" title="ข้าม 10 วิ">
+      <button id="forwardBtn" title="ข้าม 10 วินาที" aria-label="ข้าม 10 วินาที">
         <svg viewBox="0 0 24 24"><path d="M13 6v12l8.5-6L13 6zM11 6v2.1C7.6 8.6 5 11.5 5 15s2.6 6.4 6 6.9v2.1C6.5 23.5 3 19.7 3 15s3.5-8.5 8-9z"/></svg>
       </button>
     </div>
   </div>
 
   <div class="progress-bar">
-    <input type="range" id="progressBar" value="0" step="0.1">
+    <input type="range" id="progressBar" value="0" step="0.1" aria-label="แถบสถานะวิดีโอ">
     <span class="time" id="timeDisplay">00:00 / 00:00</span>
   </div>
 </div>
@@ -134,8 +177,10 @@
   const forwardBtn = document.getElementById('forwardBtn');
   const progressBar = document.getElementById('progressBar');
   const timeDisplay = document.getElementById('timeDisplay');
+  const bigPlayBtn = document.getElementById('bigPlayBtn');
 
   function formatTime(time) {
+    if (isNaN(time)) return "00:00";
     const m = Math.floor(time / 60).toString().padStart(2, '0');
     const s = Math.floor(time % 60).toString().padStart(2, '0');
     return `${m}:${s}`;
@@ -151,10 +196,21 @@
     pauseIcon.style.display = isPlaying ? "inline" : "none";
   }
 
+  // เปิด/ปิด controls overlay เมื่อแตะจอ
   wrapper.addEventListener('click', () => {
     overlay.classList.toggle('active');
   });
 
+  // ปุ่มเล่นใหญ่กลางจอ
+  bigPlayBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    video.play();
+    bigPlayBtn.classList.add('hidden');
+    togglePlayIcon(true);
+    overlay.classList.add('active');
+  });
+
+  // เล่น/หยุด ปุ่มเล็ก
   playPauseBtn.addEventListener('click', (e) => {
     e.stopPropagation();
     if (video.paused) {
@@ -166,26 +222,43 @@
     }
   });
 
+  // ย้อน 10 วิ
   backwardBtn.addEventListener('click', (e) => {
     e.stopPropagation();
     video.currentTime = Math.max(video.currentTime - 10, 0);
   });
 
+  // ข้าม 10 วิ
   forwardBtn.addEventListener('click', (e) => {
     e.stopPropagation();
     video.currentTime = Math.min(video.currentTime + 10, video.duration);
   });
 
+  // อัปเดตแถบเวลาและข้อความเวลา
   video.addEventListener('timeupdate', () => {
     const percent = (video.currentTime / video.duration) * 100;
-    progressBar.value = percent;
+    progressBar.value = percent || 0;
     timeDisplay.textContent = `${formatTime(video.currentTime)} / ${formatTime(video.duration)}`;
   });
 
+  // ลากแถบ progress
   progressBar.addEventListener('input', () => {
     video.currentTime = (progressBar.value / 100) * video.duration;
   });
 
+  // เมื่อวีดีโอหยุด ให้แสดงปุ่มเล่นใหญ่กลางจอ
+  video.addEventListener('pause', () => {
+    bigPlayBtn.classList.remove('hidden');
+    togglePlayIcon(false);
+  });
+
+  // เมื่อวีดีโอเล่น ให้ซ่อนปุ่มเล่นใหญ่
+  video.addEventListener('play', () => {
+    bigPlayBtn.classList.add('hidden');
+    togglePlayIcon(true);
+  });
+
+  // โหลดลิงก์จากพารามิเตอร์ ?src=
   const hlsUrl = getHLSUrl();
   if (!hlsUrl) {
     alert("❌ ไม่พบลิงก์วิดีโอ (src=...)");
@@ -194,14 +267,20 @@
     hls.loadSource(hlsUrl);
     hls.attachMedia(video);
     hls.on(Hls.Events.MANIFEST_PARSED, () => {
-      video.play();
-      togglePlayIcon(true);
+      // ไม่ autoplay ให้รอผู้เล่นกดปุ่ม
+      video.pause();
+      togglePlayIcon(false);
+      bigPlayBtn.classList.remove('hidden');
     });
   } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
     video.src = hlsUrl;
     video.addEventListener('loadedmetadata', () => {
-      video.play();
+      video.pause();
+      togglePlayIcon(false);
+      bigPlayBtn.classList.remove('hidden');
     });
+  } else {
+    alert('ไม่รองรับการเล่นไฟล์ HLS บนอุปกรณ์นี้');
   }
 </script>
 
