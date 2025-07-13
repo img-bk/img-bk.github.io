@@ -3,70 +3,207 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Simple HLS Player</title>
+  <title>Video Player</title>
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
   <style>
-    /* เต็มหน้าจอไม่มี margin */
-    html, body {
-      margin: 0; padding: 0; height: 100%;
-      background-color: #000;
-      overflow: hidden;
-    }
-    video {
-      width: 100vw;
+    body {
+      margin: 0;
+      background: #000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
       height: 100vh;
-      background-color: black;
-      display: block;
+    }
+
+    .video-wrapper {
+      position: relative;
+      width: 100%;
+      max-width: 800px;
+      aspect-ratio: 16 / 9;
+      background: #000;
+    }
+
+    video {
+      width: 100%;
+      height: 100%;
+      background: #000;
+    }
+
+    .controls-overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 0, 0, 0.3);
+      opacity: 0;
+      pointer-events: none;
+      transition: 0.3s;
+    }
+
+    .controls-overlay.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 25px;
+    }
+
+    .buttons button {
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      backdrop-filter: blur(5px);
+      color: white;
+      padding: 14px;
+      border-radius: 50%;
+      cursor: pointer;
+      width: 60px;
+      height: 60px;
+      transition: transform 0.2s;
+    }
+
+    .buttons button:hover {
+      transform: scale(1.1);
+    }
+
+    .buttons svg {
+      width: 28px;
+      height: 28px;
+      fill: white;
+    }
+
+    .progress-bar {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      padding: 6px;
+      display: flex;
+      align-items: center;
+    }
+
+    .progress-bar input[type="range"] {
+      flex: 1;
+      margin: 0 10px;
+    }
+
+    .time {
+      color: white;
+      font-size: 13px;
+      min-width: 80px;
+      text-align: right;
     }
   </style>
 </head>
 <body>
-  <video id="video" controls autoplay playsinline></video>
 
-  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-  <script>
-    const video = document.getElementById('video');
+<div class="video-wrapper" id="playerWrapper">
+  <video id="video" controlsList="nodownload"></video>
+
+  <div class="controls-overlay active" id="overlay">
+    <div class="buttons">
+      <button id="backwardBtn" title="ย้อน 10 วิ">
+        <svg viewBox="0 0 24 24"><path d="M11 18V6l-8.5 6L11 18zm1-12v2.1c3.4.5 6 3.4 6 6.9s-2.6 6.4-6 6.9v2.1c4.5-.5 8-4.3 8-9s-3.5-8.5-8-9z"/></svg>
+      </button>
+      <button id="playPauseBtn" title="เล่น/หยุด">
+        <svg id="playIcon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+        <svg id="pauseIcon" viewBox="0 0 24 24" style="display:none;"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+      </button>
+      <button id="forwardBtn" title="ข้าม 10 วิ">
+        <svg viewBox="0 0 24 24"><path d="M13 6v12l8.5-6L13 6zM11 6v2.1C7.6 8.6 5 11.5 5 15s2.6 6.4 6 6.9v2.1C6.5 23.5 3 19.7 3 15s3.5-8.5 8-9z"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="progress-bar">
+    <input type="range" id="progressBar" value="0" step="0.1">
+    <span class="time" id="timeDisplay">00:00 / 00:00</span>
+  </div>
+</div>
+
+<script>
+  const video = document.getElementById('video');
+  const overlay = document.getElementById('overlay');
+  const wrapper = document.getElementById('playerWrapper');
+  const playPauseBtn = document.getElementById('playPauseBtn');
+  const playIcon = document.getElementById('playIcon');
+  const pauseIcon = document.getElementById('pauseIcon');
+  const backwardBtn = document.getElementById('backwardBtn');
+  const forwardBtn = document.getElementById('forwardBtn');
+  const progressBar = document.getElementById('progressBar');
+  const timeDisplay = document.getElementById('timeDisplay');
+
+  function formatTime(time) {
+    const m = Math.floor(time / 60).toString().padStart(2, '0');
+    const s = Math.floor(time % 60).toString().padStart(2, '0');
+    return `${m}:${s}`;
+  }
+
+  function getHLSUrl() {
     const params = new URLSearchParams(window.location.search);
-    const encodedUrl = params.get('url');
+    return params.get('src');
+  }
 
-    if (!encodedUrl) {
-      alert('❌ ไม่มี URL วิดีโอในพารามิเตอร์');
-      throw new Error('Missing video url');
-    }
+  function togglePlayIcon(isPlaying) {
+    playIcon.style.display = isPlaying ? "none" : "inline";
+    pauseIcon.style.display = isPlaying ? "inline" : "none";
+  }
 
-    // ฟังก์ชันถอดรหัส Base64 แบบรองรับ URL-safe
-    function decodeBase64(str) {
-      str = str.replace(/-/g, '+').replace(/_/g, '/');
-      while (str.length % 4) {
-        str += '=';
-      }
-      try {
-        return atob(str);
-      } catch (e) {
-        alert('❌ ไม่สามารถถอดรหัส URL ได้');
-        throw e;
-      }
-    }
+  wrapper.addEventListener('click', () => {
+    overlay.classList.toggle('active');
+  });
 
-    const videoSrc = decodeBase64(encodedUrl);
-
-    if (Hls.isSupported()) {
-      const hls = new Hls();
-      hls.loadSource(videoSrc);
-      hls.attachMedia(video);
-      hls.on(Hls.Events.MANIFEST_PARSED, () => {
-        video.play();
-      });
-      hls.on(Hls.Events.ERROR, function(event, data) {
-        console.error('HLS.js error:', data);
-      });
-    } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-      video.src = videoSrc;
-      video.addEventListener('loadedmetadata', () => {
-        video.play();
-      });
+  playPauseBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (video.paused) {
+      video.play();
+      togglePlayIcon(true);
     } else {
-      alert('❌ เบราว์เซอร์ไม่รองรับ HLS (.m3u8)');
+      video.pause();
+      togglePlayIcon(false);
     }
-  </script>
+  });
+
+  backwardBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    video.currentTime = Math.max(video.currentTime - 10, 0);
+  });
+
+  forwardBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    video.currentTime = Math.min(video.currentTime + 10, video.duration);
+  });
+
+  video.addEventListener('timeupdate', () => {
+    const percent = (video.currentTime / video.duration) * 100;
+    progressBar.value = percent;
+    timeDisplay.textContent = `${formatTime(video.currentTime)} / ${formatTime(video.duration)}`;
+  });
+
+  progressBar.addEventListener('input', () => {
+    video.currentTime = (progressBar.value / 100) * video.duration;
+  });
+
+  const hlsUrl = getHLSUrl();
+  if (!hlsUrl) {
+    alert("❌ ไม่พบลิงก์วิดีโอ (src=...)");
+  } else if (Hls.isSupported()) {
+    const hls = new Hls();
+    hls.loadSource(hlsUrl);
+    hls.attachMedia(video);
+    hls.on(Hls.Events.MANIFEST_PARSED, () => {
+      video.play();
+      togglePlayIcon(true);
+    });
+  } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+    video.src = hlsUrl;
+    video.addEventListener('loadedmetadata', () => {
+      video.play();
+    });
+  }
+</script>
+
 </body>
 </html>
