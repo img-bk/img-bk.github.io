@@ -12,12 +12,7 @@ const animeList = [
     type: "ตอนที่ 1-156 ซับไทย Ss5",
     link: "https://fights-break-sphere-season-5.github.io/"
   },
-  {
-    title: "Black Clover แบล็คโคลเวอร์ ตอนที่ 1-170 พากย์ไทย",
-    img: "https://img5.pic.in.th/file/secure-sv1/bf26af8a102711cdc85dc1befc400c4e.jpg",
-    type: "ตอนที่ 1-170 พากย์ไทย",
-    link: "https://blackcloverth.github.io/"
-  },
+
   
   {
     title: "Perfect World โลกอันสมบูรณ์แบบ ตอนที่ 1-224 ซับไทย",
