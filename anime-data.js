@@ -3,8 +3,8 @@ const animeList = [
   
     title: "Tunshi Xingkong มหาศึกล้างพิภพ ตอนที่ 1-181 ซับไทย",
     img: "https://img5.pic.in.th/file/secure-sv1/Tunshi-Xingkong-1-1.jpg",
-    type: "ตอนที่ 1-181 พากย์ไทย",
-    link: "tunshi-xingkong.github.io"
+    type: "ตอนที่ 1-181 ซับไทย",
+    link: "https://tunshi-xingkong.github.io"
   },
     {
     title: "Fights Break Sphere Season 5 สัประยุทธ์ทะลุฟ้า ภาค 5 ตอนที่ 1-156 ซับไทย",
