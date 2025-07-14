@@ -52,7 +52,7 @@ const animeList = [
     title: "Tunshi Xingkong มหาศึกล้างพิภพ ตอนที่ 1-178 พากย์ไทย",
     img: "https://img5.pic.in.th/file/secure-sv1/Tunshi-Xingkong-1-1.jpg",
     type: "ตอนที่ 1-178 พากย์ไทย",
-    link: "tunshi-xingkong.github.io/thai"
+    link: "https://tunshi-xingkong.github.io/thai"
   },
 
     
