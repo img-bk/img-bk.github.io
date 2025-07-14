@@ -6,7 +6,7 @@ const animeList = [
     link: "Fights-Break-Sphere-Season-5"
   },
   {
-    title: "Black Clover แบล็คโคลเวอร์ ตอนที่ 1-170 พากย์ไทย",
+    title: "Black Clover แบล็คโคลเวอร์ ตอนที่ 1-170 พากย์ไทย.",
     img: "https://img5.pic.in.th/file/secure-sv1/bf26af8a102711cdc85dc1befc400c4e.jpg",
     type: "ตอนที่ 1-170 พากย์ไทย",
     link: "black-clover-thai"
