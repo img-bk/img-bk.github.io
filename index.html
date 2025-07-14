@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Anime BK - อนิเมะออนไลน์ ดูการ์ตูนออนไลน์ อนิเมะพากย์ไทย อนิเมะซับไทย อนิเมะจีน อนิเมะ BK</title>
+  <title>Anime BK - อนิเมะออนไลน์ ดูการ์ตูนออนไลน์ อนิเมะพากย์ไทย อนิเมะซับไทย อนิเมะจีน</title>
   <link rel="icon" href="https://img2.pic.in.th/pic/039b1c3dd878efaf74.png" type="image/png" />
   <link rel="canonical" href="https://sss-anime.github.io/" />
   <link href="https://fonts.googleapis.com/css2?family=Kanit&display=swap" rel="stylesheet" />
@@ -25,6 +25,7 @@
       align-items: center;
       justify-content: space-between;
       flex-wrap: wrap;
+      position: relative;
     }
     .logo {
       font-size: 1.8rem;
@@ -52,6 +53,7 @@
       margin: 4px 0;
       border-radius: 2px;
     }
+
     @media(max-width: 600px) {
       nav {
         display: none;
@@ -62,14 +64,22 @@
         left: 0;
         right: 0;
         z-index: 10;
+        width: 100%;
+        padding: 10px 20px;
       }
       nav.active {
         display: flex;
+      }
+      nav a {
+        display: block;
+        padding: 10px 0;
+        border-bottom: 1px solid rgba(255,255,255,0.2);
       }
       .menu-toggle {
         display: flex;
       }
     }
+
     main {
       max-width: 1200px;
       margin: 20px auto;
@@ -273,7 +283,7 @@
       btn.addEventListener('click', () => {
         currentPage = i;
         renderPage(currentPage);
-        window.scrollTo(0, 0); // กระโดดขึ้นบนทันที
+        window.scrollTo(0, 0);
       });
       pageNumbers.appendChild(btn);
     };
@@ -303,7 +313,7 @@
     if (currentPage > 1) {
       currentPage--;
       renderPage(currentPage);
-      window.scrollTo(0, 0); // กระโดดขึ้นบนทันที
+      window.scrollTo(0, 0);
     }
   });
 
@@ -312,7 +322,7 @@
     if (currentPage < totalPages) {
       currentPage++;
       renderPage(currentPage);
-      window.scrollTo(0, 0); // กระโดดขึ้นบนทันที
+      window.scrollTo(0, 0);
     }
   });
 
