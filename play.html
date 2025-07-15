@@ -1,0 +1,108 @@
+<!DOCTYPE html><html lang="th">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>HLS Player – streameiei demo</title>
+    <!-- Hls.js (latest) -->
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <style>
+      :root {
+        color-scheme: dark;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        font-family: system-ui, sans-serif;
+        background: #0b0b0b;
+      }
+      .wrapper {
+        width: 90%;
+        max-width: 840px;
+        aspect-ratio: 16/9;
+        position: relative;
+      }
+      video {
+        width: 100%;
+        height: 100%;
+        border-radius: 1rem;
+        background: #000;
+      }
+      .error {
+        position: absolute;
+        inset: 0;
+        display: none;
+        place-items: center;
+        text-align: center;
+        padding: 1rem;
+        backdrop-filter: blur(2px);
+        background: rgba(0, 0, 0, 0.6);
+        border-radius: 1rem;
+      }
+      .error.show {
+        display: grid;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrapper">
+      <video
+        id="video"
+        controls
+        autoplay
+        muted
+        playsinline
+        crossorigin="anonymous"
+        poster="https://dummyimage.com/1280x720/000/fff&text=Loading+stream..."
+      ></video>
+      <div id="errMsg" class="error">
+        <div>
+          <strong>เกิดข้อผิดพลาดในการเล่นสตรีม</strong><br />
+          <span id="errText"></span>
+        </div>
+      </div>
+    </div><script>
+  const video = document.getElementById("video");
+  const errBox = document.getElementById("errMsg");
+  const errText = document.getElementById("errText");
+  const src =
+    "https://hls.streameiei.xyz/hlsr2/57513c9f0031f86a1480a3a8737d8f1d/master.m3u8";
+
+  function showError(msg) {
+    errText.textContent = msg;
+    errBox.classList.add("show");
+  }
+
+  function initPlayer(url) {
+    if (video.canPlayType("application/vnd.apple.mpegURL")) {
+      video.src = url;
+    } else if (Hls.isSupported()) {
+      const hls = new Hls({
+        enableWorker: true,
+        lowLatencyMode: true,
+        backBufferLength: 90,
+      });
+
+      hls.loadSource(url);
+      hls.attachMedia(video);
+
+      hls.on(Hls.Events.ERROR, function (e, data) {
+        if (data.fatal) {
+          showError(data.type + ": " + data.details);
+          hls.destroy();
+        }
+      });
+    } else {
+      showError("เบราว์เซอร์นี้ไม่รองรับ HLS");
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", () => initPlayer(src));
+</script>
+
+  </body>
+</html>
