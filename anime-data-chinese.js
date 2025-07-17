@@ -50,7 +50,13 @@ const animeList = [
     link: "https://tunshi-xingkong.github.io/thai"
   },
 
-    
+      {
+  
+    title: "Shen Yin Wangzuo ผนึกเทพบัลลังก์ราชันย์ ตอนที่ 1-168 ซับไทย",
+    img: "https://img2.pic.in.th/pic/GoOnlineTools-image-downloader-1_11zon-1.jpeg",
+    type: "ตอนที่ 1-168 ซับไทย",
+    link: "Shen-Yin-Wangzuo"
+  },
         
 
   // เพิ่มรายการอนิเมะได้เรื่อย ๆ
