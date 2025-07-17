@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>อนิเมะพากย์ไทย - Anime BK</title>
   <link rel="icon" href="https://img2.pic.in.th/pic/039b1c3dd878efaf74.png" type="image/png" />
-  <link rel="canonical" href="https://anime-bk.com/thai.html" />
+  <link rel="canonical" href="https://anime-bk.com/sub.html" />
   <link href="https://fonts.googleapis.com/css2?family=Kanit&display=swap" rel="stylesheet" />
   <style>
     body {
@@ -53,6 +53,7 @@
       margin: 4px 0;
       border-radius: 2px;
     }
+
     @media(max-width: 600px) {
       nav {
         display: none;
@@ -78,6 +79,7 @@
         display: flex;
       }
     }
+
     main {
       max-width: 1200px;
       margin: 20px auto;
@@ -136,13 +138,6 @@
       display: -webkit-box;
       -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
-
-      /* เพิ่มจัดกึ่งกลางแนวนอนและแนวตั้ง */
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-      height: 3em; /* ประมาณ 2 บรรทัด */
     }
     .anime-ep {
       color: #ffa07a;
@@ -210,7 +205,7 @@
 <main>
   <h1>อนิเมะพากย์ไทย</h1>
   <div class="search-container">
-    <input id="searchInput" type="search" placeholder="ค้นหาอนิเมะเฉพาะพากย์ไทย..." aria-label="ค้นหาอนิเมะ" />
+    <input id="searchInput" type="search" placeholder="ค้นหาอนิเมะ..." aria-label="ค้นหาอนิเมะ" />
   </div>
   <div class="anime-grid" id="animeGrid"></div>
   <div class="no-results" id="noResults" style="display:none;">ไม่พบรายการอนิเมะที่ค้นหา</div>
@@ -225,7 +220,7 @@
   © 2025 ANIME BK — ดูอนิเมะออนไลน์ อนิเมะ BK พากย์ไทย ซับไทย อนิเมะจีน ครบทุกแนว
 </footer>
 
-<script src="anime-data-thai.js"></script>
+<script src="anime-data-sub.js"></script>
 <script>
   const menuToggle = document.getElementById('menuToggle');
   const navMenu = document.getElementById('navMenu');
