@@ -205,7 +205,7 @@
 <main>
   <h1>อนิเมะพากย์ไทย</h1>
   <div class="search-container">
-    <input id="searchInput" type="search" placeholder="ค้นหาอนิเมะเฉพาะพากย์ไทย..." aria-label="ค้นหาอนิเมะ" />
+    <input id="searchInput" type="search" placeholder="ค้นหาอนิเมะ..." aria-label="ค้นหาอนิเมะ" />
   </div>
   <div class="anime-grid" id="animeGrid"></div>
   <div class="no-results" id="noResults" style="display:none;">ไม่พบรายการอนิเมะที่ค้นหา</div>
@@ -241,7 +241,10 @@
 
   const itemsPerPage = 20;
   let currentPage = 1;
-  let filteredList = animeList;
+
+  // สมมติ animeList ประกาศใน anime-data-thai.js (โหลดไว้ก่อน)
+  // เริ่มต้นกรองแสดงเฉพาะ "พากย์ไทย"
+  let filteredList = animeList.filter(anime => anime.type.toLowerCase().includes('พากย์ไทย'));
 
   function renderPage(page) {
     animeGrid.innerHTML = '';
@@ -333,9 +336,13 @@
   searchInput.addEventListener('input', () => {
     const query = searchInput.value.trim().toLowerCase();
     currentPage = 1;
-    filteredList = query === ''
-      ? animeList
-      : animeList.filter(anime => anime.title.toLowerCase().includes(query));
+    if (query === '') {
+      // กลับไปแสดงเฉพาะพากย์ไทย
+      filteredList = animeList.filter(anime => anime.type.toLowerCase().includes('พากย์ไทย'));
+    } else {
+      // ค้นหาจากทั้งหมด (ไม่กรองพากย์ไทย)
+      filteredList = animeList.filter(anime => anime.title.toLowerCase().includes(query));
+    }
     renderPage(currentPage);
   });
 
