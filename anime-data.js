@@ -58,7 +58,7 @@ const animeList = [
   
     title: "Shen Yin Wangzuo ผนึกเทพบัลลังก์ราชันย์ ตอนที่ 1-168 ซับไทย",
     img: "https://img2.pic.in.th/pic/GoOnlineTools-image-downloader-1_11zon-1.jpeg",
-    type: "ตอนที่ 1-168 ซับไทย.",
+    type: "ตอนที่ 1-169 ซับไทย.",
     link: "https://shen-yin-wangzuo.github.io/"
   },
 
