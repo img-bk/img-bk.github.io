@@ -18,7 +18,14 @@ const animeList = [
     type: "ตอนที่ 1-170 พากย์ไทย",
     link: "https://blackcloverth.github.io/"
   },
+    
+  {
   
+    title: "Shen Yin Wangzuo ผนึกเทพบัลลังก์ราชันย์ ตอนที่ 1-6 พากย์ไทย",
+    img: "https://img2.pic.in.th/pic/GoOnlineTools-image-downloader-1_11zon-1.jpeg",
+    type: "ตอนที่ 1-6 พากย์ไทย.",
+    link: "https://shen-yin-wangzuo.github.io/thai"
+  },
   {
     title: "Perfect World โลกอันสมบูรณ์แบบ ตอนที่ 1-224 ซับไทย",
     img: "https://img5.pic.in.th/file/secure-sv1/Perfect-World-1.jpg",
