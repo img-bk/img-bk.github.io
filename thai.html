@@ -243,8 +243,10 @@
 
   const itemsPerPage = 20;
   let currentPage = 1;
-  let filteredList = animeList;
+  
+  let filteredList = animeList.filter(anime => anime.type.includes("พากย์ไทย"));
 
+  
   function renderPage(page) {
     animeGrid.innerHTML = '';
     const start = (page - 1) * itemsPerPage;
