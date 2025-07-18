@@ -244,8 +244,8 @@
   const itemsPerPage = 20;
   let currentPage = 1;
   
-  const dubThaiList = animeList.filter(anime =>
-  anime.type.includes("พากย์ไทย") && !anime.type.includes("จีน")
+  let filteredList = animeList.filter(anime =>
+  anime.type.includes("พากย์ไทย")
 );
 
   
