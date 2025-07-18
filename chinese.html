@@ -242,7 +242,11 @@
 
   const itemsPerPage = 20;
   let currentPage = 1;
-  let filteredList = animeList.filter(anime => anime.type.includes("จีนซับไทย จีนพากย์ไทย"));
+  // จีนพากย์ไทย
+let filteredListDub = animeList.filter(anime => anime.type.includes("จีน") && anime.type.includes("พากย์ไทย"));
+
+// จีนซับไทย
+let filteredListSub = animeList.filter(anime => anime.type.includes("จีน") && anime.type.includes("ซับไทย"));
 
   function renderPage(page) {
     animeGrid.innerHTML = '';
