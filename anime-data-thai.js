@@ -56,6 +56,32 @@ const animeList = [
   },
 
     
+    {
+  
+    title: "Lookism คนมันหล่อช่วยไม่ได้ ตอนที่ 1-8 พากย์ไทย",
+    img: "https://img2.pic.in.th/pic/Lookism-1.jpg",
+    type: "ตอนที่ 1-8 พากย์ไทย",
+    link: "lookism-thai"
+  },  
+        
+
+
+  {
+  
+    title: "Blue Lock ขังดวลแข้ง ตอนที่ 1-24 พากย์ไทย",
+    img: "https://img5.pic.in.th/file/secure-sv1/Blue-Lock--300x450-1.jpg",
+    type: "ตอนที่ 1-24 พากย์ไทย",
+    link: "blue-lock-thai-2"
+  },
+
+  {
+  
+    title: "Blue Lock vs. U-20 Japan – ขังดวลแข้ง ภาค 2 ตอนที่ 1-14 พากย์ไทย",
+    img: "https://img2.pic.in.th/pic/Blue-Lock-2nd-Season_11zon-1.jpg",
+    type: "ตอนที่ 1-14 พากย์ไทย Ss2",
+    link: "blue-lock-vs-u-20-japan-ss2-thai"
+  },
+
         
 
   // เพิ่มรายการอนิเมะได้เรื่อย ๆ
