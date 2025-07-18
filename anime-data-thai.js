@@ -1,9 +1,9 @@
 const animeList = [
     {
   
-    title: "Tunshi Xingkong มหาศึกล้างพิภพ ตอนที่ 1-181 จีนซับไทย",
+    title: "Tunshi Xingkong มหาศึกล้างพิภพ ตอนที่ 1-181 ซับไทย",
     img: "https://img5.pic.in.th/file/secure-sv1/Tunshi-Xingkong-1-1.jpg",
-    type: "ตอนที่ 1-181 ซับไทย",
+    type: "ตอนที่ 1-181 จีนซับไทย",
     link: "https://tunshi-xingkong.github.io"
   },
     {
