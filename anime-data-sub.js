@@ -37,6 +37,21 @@ const animeList = [
   },
 
 
+  {
+  
+    title: "Blue Lock ขังดวลแข้ง ตอนที่ 1-24 ซับไทย",
+    img: "https://img5.pic.in.th/file/secure-sv1/Blue-Lock--300x450-1.jpg",
+    type: "ตอนที่ 1-24 ซับไทย",
+    link: "blue-lock-sub"
+  },
+
+  {
+  
+    title: "Blue Lock vs. U-20 Japan – ขังดวลแข้ง ภาค 2 ตอนที่ 1-14 ซับไทย",
+    img: "https://img2.pic.in.th/pic/Blue-Lock-2nd-Season_11zon-1.jpg",
+    type: "ตอนที่ 1-14 ซับไทย Ss2",
+    link: "blue-lock-vs-u-20-japan-ss2-sub"
+  },
     
         
 
